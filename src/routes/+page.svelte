@@ -1,32 +1,8 @@
 <script>
-    import { fetch } from "@tauri-apps/plugin-http";
+    import { Servo } from "../lib/servo.svelte"
 
-    // Send a GET request
+    let servo = new Servo();
 
-    let isi_json = $state("");
-
-    async function getResponse() {
-        const response = await fetch("http://192.168.1.69/perintah", {
-            method: "POST",
-            headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ perintah: "ambil-data" }),
-        });
-
-        
-
-        console.log(response.status); // e.g. 200
-        console.log(response.statusText); // e.g. "OK"
-
-        const content = await response.text();
-
-        console.log(content); // e.g. "OK"
-
-        isi_json += content + "<br>" 
-
-    }
 </script>
 
 <section class="h-screen flex flex-col justify-between items-center">
@@ -42,15 +18,26 @@
     </div>
     <div class="size-fit flex flex-col">
         <div class="h-40 w-80  border-[1px] border-slate-950 overflow-auto">
-            {@html isi_json}
+            {@html servo.content}
         </div>
+
         <div class="m-3 flex flex-row justify-center items-center">
-            <button
-                onclick={getResponse}
-                class="bg-emerald-600 hover:bg-emerald-400 cli rounded-md size-full border border-black"
-                >Ambil Data</button
-            >
+          {@render btn("Servo Up", () => servo.up())}
+          {@render btn("Servo Down", () => servo.down())}
+          {@render btn("Servo Reset", () => servo.reset())}
         </div>
+
     </div>
     <div></div>
 </section>
+
+{#snippet btn(title, cmd)}
+  <button
+      onclick={cmd}
+      class="bg-emerald-600 hover:bg-emerald-400 cli rounded-md size-full border border-black"
+    >
+      {title}
+    </button
+  >
+{/snippet}
+
